@@ -1,15 +1,26 @@
+import { SearchBox, buildSearchBox } from '@coveo/headless';
+import { engine } from './Engine';
 import logo from './logo.svg';
 import './App.css';
 import SearchForm from './components/SearchForm';
 import ResultList from './components/ResultList';
 import { useState, useEffect } from 'react';
 
+const mySearchBox: SearchBox = buildSearchBox(engine);
+
 function App() {
 
   let [suggestions, setSuggestions] = useState(['one', 'two']);
   
+  useEffect(() => {
+    const unsubscribe = mySearchBox.subscribe(() => setSuggestions(mySearchBox.state.suggestions.map(sug => sug.rawValue)));
+
+    return () => (unsubscribe())
+  }, []);
+
   const onSearchText = (text: string) => {
     console.log('onSearchText ', text);
+    mySearchBox.updateText(text);
   }
 
   return (
