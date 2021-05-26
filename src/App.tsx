@@ -19,7 +19,6 @@ function App() {
   }, []);
 
   const onSearchText = (text: string) => {
-    console.log('onSearchText ', text);
     mySearchBox.updateText(text);
   }
 
