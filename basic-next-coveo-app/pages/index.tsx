@@ -1,28 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SearchBox, buildSearchBox } from '@coveo/headless';
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { engine } from '../Engine'
+import ResultList  from '../components/ResultList'
+import SearchForm  from '../components/SearchForm'
 
 const mySearchBox: SearchBox = buildSearchBox(engine);
 
 export default function Home() {
-  let [searchWord, setSearchWord] = useState('');
+  let [suggestions, setSuggestions] = useState(['one','two','three']);
+  //let [results, setResults] = useState('');
+  let results = [];
 
-  engine.subscribe(()=>{
-    console.log(mySearchBox.state.suggestions.map(el=>el.rawValue) );
-  });
+  useEffect(() => {
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    mySearchBox.updateText( searchWord );
+    const unsubscribe = mySearchBox.subscribe(() => setSuggestions(mySearchBox.state.suggestions.map(sug => sug.rawValue)));
+
+    return () => (unsubscribe())
+
+  }, []);
+
+
+
+  const handleSubmit = (word) => {
+    mySearchBox.updateText( word );
   }
 
-  const handleChange = (event) => {
-    setSearchWord(event.target.value);
-    event.preventDefault();
-  }
+  
 
   return (
     <div className={styles.container}>
@@ -37,11 +43,8 @@ export default function Home() {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
-        Search:
-        <form onSubmit={handleSubmit} >
-          <input type="text" onChange={handleChange} value={searchWord} />
-          <button type="submit">search</button>
-        </form>
+        <SearchForm onSubmit={handleSubmit} />
+        <ResultList results={suggestions} />
       </main>
 
       <footer className={styles.footer}>
