@@ -11,7 +11,7 @@ const mySearchBox: SearchBox = buildSearchBox(engine);
 
 export default function Home() {
   let [suggestions, setSuggestions] = useState(['one','two','three']);
-  //let [results, setResults] = useState('');
+  
   let results = [];
 
   useEffect(() => {
